@@ -19,7 +19,7 @@ async function getTasks() {
             tasks.points
         FROM
             tasks
-
+        JOIN household ON household.id = tasks.household_id
         ORDER BY tasks.id DESC;
     `);
     console.log(result.rows);
