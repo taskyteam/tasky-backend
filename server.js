@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const jwt = require('jsonwebtoken');
-const { getTasks, getTasksByUser, createTask, updateTask, deleteTask} = require('./services/database');
+const database = require('./services/database');
 
 
 const PORT = process.env.PORT || 3333;
