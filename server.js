@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -5,8 +6,9 @@ const jwt = require('jsonwebtoken');
 const database = require('./services/database');
 
 
+
 const PORT = process.env.PORT || 3333;
-const APP_SECRET = "Xxxx"
+const APP_SECRET = "legg til i .env"
 
 app.use(cors());
 app.use(express.json());
@@ -25,8 +27,8 @@ app.get('/tasks/:user_id', async (req, res) => {
 });
 
 app.post('/tasks', async (req, res) => {
-    const { username, title, description, points } = req.body;
-    const task = await database.createTask(username, title, description, points, assigned_to);
+    const { title, description, points, assigned_to, household_id } = req.body;
+    const task = await database.createTask(title, description, points, assigned_to, household_id);
     res.json(task);
 });
 

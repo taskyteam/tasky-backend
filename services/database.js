@@ -1,6 +1,6 @@
 const { Pool } = require('pg');
 
-const POSTGRES_URL = process.env.POSTGRES_URL || 'postgres://postgres:postgres@localhost:5432/tasky';
+const POSTGRES_URL = process.env.POSTGRES_URL // 'postgres://postgres:<ditt passord>@localhost:5432/<ditt database navn>';
 
 const database = new Pool({
     connectionString: POSTGRES_URL,
@@ -32,27 +32,33 @@ async function getTasksByUser(user_id) {
             tasks.assigned_to = $1
         ORDER BY tasks.id DESC;
     `, [user_id]);
-    console.log(result.rows)
-    return result.rows;
+    console.log(result.rows[0])
+    return result.rows[0];
 }
 
 
-async function createTask(username, title, description, points, assigned_to) {
-    const userResult = await database.query(`
-        SELECT
-            users.id
-        FROM 
-            users
-        WHERE
-            users.username = $1
-    `, [username]);
-    const user = userResult.rows[0];
+async function createTask(title, description, points, assigned_to, household_id) {
+    // try{
+    // const userResult = await database.query(`
+    //     SELECT
+    //         users.id
+    //     FROM 
+    //         users
+    //     WHERE
+    //         users.id = $1
+    // `, [assigned_to]);
+    // const assigned_user = userResult.rows[0];
+    // if(!assigned_user) throw new Error('User does not exist');
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
 
     const result = await database.query(`
-        INSERT INTO tasks (household_id, title, description, assinged_to, status, points)
+        INSERT INTO tasks (household_id, title, description, assigned_to, status, points)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
-    `, [user.id, title, description, username, 'open', points, assigned_to]);
+    `, [household_id, title, description, assigned_to, 'open', points ]);
     console.log(result.rows[0]);
     return result.rows[0];
 }
