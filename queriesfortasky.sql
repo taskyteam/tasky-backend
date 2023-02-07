@@ -11,6 +11,7 @@ CREATE TABLE tasks (
     assigned_to INTEGER REFERENCES users(id),
     status VARCHAR(255) NOT NULL,
     points INTEGER,
+    household_id INTEGER REFERENCES household(id),
 );
 
 CREATE TABLE users (
