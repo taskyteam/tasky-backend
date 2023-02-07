@@ -1,10 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const jwt = require('jsonwebtoken');
+//const jwt = require('jsonwebtoken');
 
 const PORT = process.env.PORT || 3333;
-const APP_SECRET = "Xxxx"
+//const APP_SECRET = "Xxxx"
 
 app.use(cors());
 app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.send('Hello from Twitter API');
+    }
+);
+
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+    }
+);
+
+

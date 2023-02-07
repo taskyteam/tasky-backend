@@ -1,13 +1,14 @@
 const { Pool } = require('pg');
 
-const POSTGRES_URL = process.env.POSTGRES_URL //|| 'postgres://postgres:postgres@localhost:5432/tasky';
+const POSTGRES_URL = process.env.POSTGRES_URL || 'postgres://taskydb_user:387456@localhost:5432/taskydb';
 
 const database = new Pool({
     connectionString: POSTGRES_URL,
+
 });
 // A database for an house chore app called Tasky
 
-async function getTasks() {
+async function getTasksByHousehold(household_id) {
     const result = await database.query(`
         SELECT
             tasks.id,
@@ -20,11 +21,13 @@ async function getTasks() {
         FROM
             tasks
         JOIN household ON household.id = tasks.household_id
+        WHERE household.id = $1
         ORDER BY tasks.id DESC;
-    `);
+    `, [household_id]);
     console.log(result.rows);
     return result.rows;
 }
+
 
 async function getTasksByUser(username) {
     const result = await database.query(`
@@ -38,11 +41,11 @@ async function getTasksByUser(username) {
             tasks.points
         FROM
             tasks
-        WHERE
-            tasks.assinged_to = $1
+        JOIN users ON users.id = tasks.assinged_to
+        WHERE users.username = $1
         ORDER BY tasks.id DESC;
-    `, [username]);
-    console.log(result.rows)
+            `, [username]);
+    console.log(result.rows);
     return result.rows;
 }
 
@@ -90,7 +93,7 @@ async function deleteTask(id) {
 }
 
 module.exports = {
-    getTasks,
+    getTasksByHousehold,
     getTasksByUser,
     createTask,
     updateTask,
