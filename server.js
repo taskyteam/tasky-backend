@@ -12,14 +12,15 @@ app.use(cors());
 app.use(express.json());
 
 
-app.get('/tasks', async (req, res) => {
+app.get('/tasks/households/:household_id', async (req, res) => {
+    const { household_id } = req.params;
     const tasks = await database.getTasksByHousehold(household_id);
     res.json(tasks);
 });
 
-app.get('/tasks/:username', async (req, res) => {
-    const { username } = req.params;
-    const tasks = await database.getTasksByUser(username);
+app.get('/tasks/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+    const tasks = await database.getTasksByUser(user_id);
     res.json(tasks);
 });
 

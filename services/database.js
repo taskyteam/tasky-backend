@@ -13,8 +13,8 @@ async function getTasksByHousehold(household_id) {
             *
         FROM
             tasks
-        JOIN household ON tasks.household_id = household.id
-        WHERE household.id = $1
+        JOIN households ON tasks.household_id = households.id
+        WHERE households.id = $1
         ORDER BY tasks.id DESC;
     `, [household_id]);
     
@@ -22,16 +22,16 @@ async function getTasksByHousehold(household_id) {
     return result.rows;
 }
 
-async function getTasksByUser(username) {
+async function getTasksByUser(user_id) {
     const result = await database.query(`
         SELECT
             *
         FROM
             tasks
         WHERE
-            tasks.assinged_to = $1
+            tasks.assigned_to = $1
         ORDER BY tasks.id DESC;
-    `, [username]);
+    `, [user_id]);
     console.log(result.rows)
     return result.rows;
 }
