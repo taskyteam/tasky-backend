@@ -37,7 +37,7 @@ async function getTasksByUser(user_id) {
 }
 
 
-async function createTask(title, description, points, assigned_to, household_id) {
+async function createTask(title, description, assigned_to, points, status, household_id ) {
     // try{
     // const userResult = await database.query(`
     //     SELECT
@@ -52,13 +52,15 @@ async function createTask(title, description, points, assigned_to, household_id)
     // } catch (error) {
     //     console.log(error);
     // }
+    console.log(points + "points")
 
-
+    points = parseInt(points);
+    console.log(points + "points parsed")
     const result = await database.query(`
-        INSERT INTO tasks (household_id, title, description, assigned_to, status, points)
+        INSERT INTO tasks (title, description, assigned_to, status, points, household_id)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
-    `, [household_id, title, description, assigned_to, 'open', points ]);
+    `, [ title, description, assigned_to, status, points, household_id ]);
     console.log(result.rows[0]);
     return result.rows[0];
 }
@@ -85,12 +87,28 @@ async function deleteTask(id) {
     return result.rows[0];
 }
 
+async function getUsersByHousehold(household_id) {
+    const result = await database.query(`
+    SELECT 
+        * 
+    FROM 
+        users
+    WHERE 
+        household_id = $1;
+    `, [household_id]);
+    console.log(result.rows);
+    return result.rows;
+}
+
+
+
 module.exports = {
     getTasksByHousehold,
     getTasksByUser,
     createTask,
     updateTask,
     deleteTask,
+    getUsersByHousehold
 };
 
 

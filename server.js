@@ -25,13 +25,20 @@ app.get('/tasks/:user_id', async (req, res) => {
     const tasks = await database.getTasksByUser(user_id);
     res.json(tasks);
 });
-
+ 
+ 
+app.get('/tasks/users/:household_id', async (req, res) => {
+    const { household_id } = req.params;
+    const tasks = await database.getUsersByHousehold(household_id);
+    res.json(tasks);
+});
+ 
 app.post('/tasks', async (req, res) => {
-    const { title, description, points, assigned_to, household_id } = req.body;
-    const task = await database.createTask(title, description, points, assigned_to, household_id);
+    const { title, description, assigned_to, points, status, household_id } = req.body;
+    const task = await database.createTask(title, description, assigned_to, points, status, household_id);
     res.json(task);
 });
-
+  
 app.put('/tasks/:id', async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
