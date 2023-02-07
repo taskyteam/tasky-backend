@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const jwt = require('jsonwebtoken');
+const { getTasks, getTasksByUser, createTask, updateTask, deleteTask} = require('./services/database');
+
 
 const PORT = process.env.PORT || 3333;
 const APP_SECRET = "Xxxx"
@@ -9,7 +11,6 @@ const APP_SECRET = "Xxxx"
 app.use(cors());
 app.use(express.json());
 
-const database = require('./database');
 
 app.get('/tasks', async (req, res) => {
     const tasks = await database.getTasks();
@@ -24,7 +25,7 @@ app.get('/tasks/:username', async (req, res) => {
 
 app.post('/tasks', async (req, res) => {
     const { username, title, description, points } = req.body;
-    const task = await database.createTask(username, title, description, points);
+    const task = await database.createTask(username, title, description, points, assigned_to);
     res.json(task);
 });
 

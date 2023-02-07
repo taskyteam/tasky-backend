@@ -47,7 +47,7 @@ async function getTasksByUser(username) {
 }
 
 
-async function createTask(username, title, description, points) {
+async function createTask(username, title, description, points, assigned_to) {
     const userResult = await database.query(`
         SELECT
             users.id
@@ -62,7 +62,7 @@ async function createTask(username, title, description, points) {
         INSERT INTO tasks (household_id, title, description, assinged_to, status, points)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
-    `, [user.id, title, description, username, 'pending', points]);
+    `, [user.id, title, description, username, 'pending', points, assigned_to]);
     console.log(result.rows[0]);
     return result.rows[0];
 }
