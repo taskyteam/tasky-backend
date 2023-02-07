@@ -1,16 +1,6 @@
 CREATE TABLE households (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-);
-
-CREATE TABLE tasks (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(15) NOT NULL,
-    description TEXT,
-    assigned_to INTEGER REFERENCES users(id),
-    status VARCHAR(255) NOT NULL,
-    points INTEGER,
-    household_id INTEGER REFERENCES households(id),
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE users (
@@ -19,6 +9,16 @@ CREATE TABLE users (
     password VARCHAR(50) NOT NULL,
     admin BOOLEAN NOT NULL,
     email VARCHAR(50) NOT NULL,
+    household_id INTEGER REFERENCES households(id)
+);
+
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    assigned_to INTEGER REFERENCES users(id),
+    status VARCHAR(255) NOT NULL,
+    points INTEGER,
     household_id INTEGER REFERENCES households(id)
 );
 
