@@ -8,3 +8,9 @@ const APP_SECRET = "Xxxx"
 
 app.use(cors());
 app.use(express.json());
+
+//Hallo fra Victoria
+
+app.listen(PORT, () => {
+    console.log(`Example app listening on port: ${PORT}!`);
+  });
