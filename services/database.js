@@ -32,8 +32,8 @@ async function getTasksByUser(user_id) {
             tasks.assigned_to = $1
         ORDER BY tasks.id DESC;
     `, [user_id]);
-    console.log(result.rows[0])
-    return result.rows[0];
+    console.log(result.rows)
+    return result.rows;
 }
 
 
