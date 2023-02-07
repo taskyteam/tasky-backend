@@ -13,7 +13,7 @@ app.use(express.json());
 
 
 app.get('/tasks', async (req, res) => {
-    const tasks = await database.getTasks();
+    const tasks = await database.getTasksByHousehold(household_id);
     res.json(tasks);
 });
 

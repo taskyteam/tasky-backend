@@ -1,27 +1,23 @@
 const { Pool } = require('pg');
 
-const POSTGRES_URL = process.env.POSTGRES_URL //|| 'postgres://postgres:postgres@localhost:5432/tasky';
+const POSTGRES_URL = process.env.POSTGRES_URL || 'postgres://postgres:postgres@localhost:5432/tasky';
 
 const database = new Pool({
     connectionString: POSTGRES_URL,
 });
 // A database for an house chore app called Tasky
 
-async function getTasks() {
+async function getTasksByHousehold(household_id) {
     const result = await database.query(`
-        SELECT
-            tasks.id,
-            tasks.household_id,
-            tasks.title,
-            tasks.description,
-            tasks.assinged_to,
-            tasks.status,
-            tasks.points
+        SELECT 
+            *
         FROM
             tasks
-        JOIN household ON household.id = tasks.household_id
+        JOIN household ON tasks.household_id = household.id
+        WHERE household.id = $1
         ORDER BY tasks.id DESC;
-    `);
+    `, [household_id]);
+    
     console.log(result.rows);
     return result.rows;
 }
@@ -29,13 +25,7 @@ async function getTasks() {
 async function getTasksByUser(username) {
     const result = await database.query(`
         SELECT
-            tasks.id,
-            tasks.household_id,
-            tasks.title,
-            tasks.description,
-            tasks.assinged_to,
-            tasks.status,
-            tasks.points
+            *
         FROM
             tasks
         WHERE
@@ -62,7 +52,7 @@ async function createTask(username, title, description, points, assigned_to) {
         INSERT INTO tasks (household_id, title, description, assinged_to, status, points)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
-    `, [user.id, title, description, username, 'pending', points, assigned_to]);
+    `, [user.id, title, description, username, 'open', points, assigned_to]);
     console.log(result.rows[0]);
     return result.rows[0];
 }
@@ -70,10 +60,10 @@ async function createTask(username, title, description, points, assigned_to) {
 async function updateTask(id, status) {
     const result = await database.query(`
         UPDATE tasks
-        SET status = $1
-        WHERE id = $2
+        SET status = $2
+        WHERE id = $1
         RETURNING *;
-    `, [status, id]);
+    `, [id, status]);
     console.log(result.rows[0]);
     return result.rows[0];
 }
@@ -90,7 +80,7 @@ async function deleteTask(id) {
 }
 
 module.exports = {
-    getTasks,
+    getTasksByHousehold,
     getTasksByUser,
     createTask,
     updateTask,
