@@ -44,6 +44,11 @@ app.post("/login", async (req, res) => {
     res.status(500).send({ error: error.message })
   }
 })
+app.get("/currentuser/:user_id", async (req, res) => {
+    const { user_id } = req.params;
+    const user = await database.getCurrentUser(user_id);
+    res.json(user);
+    });
 
 app.get("/tasks/households/:household_id", async (req, res) => {
   const { household_id } = req.params;
@@ -76,12 +81,34 @@ app.post("/tasks", async (req, res) => {
   res.json(task);
 });
 
+// async function updateTask( id, title, description, assigned_to, status, points){
+//   const result = await database.query(
+//     `
+//     UPDATE tasks
+//     SET title = $1, description = $2, assigned_to = $3, status = $4, points = $5
+//     WHERE id = $6
+//     RETURNING *;
+//     `,
+//     [title, description, assigned_to, status, points, id]
+//   );
+//   console.log(result.rows[0]);
+//   return result.rows[0];
+// }
+
 app.put("/tasks/:id", async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
-  const task = await database.updateTask(id, status);
+  const { title, description, assigned_to, status, points } = req.body;
+  const task = await database.updateTask(
+    id,
+    title,
+    description,
+    assigned_to,
+    status,
+    points
+  );
   res.json(task);
 });
+
 
 app.delete("/tasks/:id", async (req, res) => {
   const { id } = req.params;
@@ -92,3 +119,4 @@ app.delete("/tasks/:id", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port: ${PORT}!`);
 });
+
