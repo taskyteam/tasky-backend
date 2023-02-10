@@ -6,12 +6,34 @@ const database = new Pool({
   connectionString: POSTGRES_URL,
 });
 // A database for an house chore app called Tasky
+ 
+async function getCurrentUser(user_id) {
+  const result = await database.query(
+    `
+            SELECT
+                *
+            FROM
+                users
+            WHERE
+                users.id = $1
+        `,
+    [user_id]
+  );
+  console.log(result.rows[0]);
+  return result.rows[0];
+}
 
 async function getTasksByHousehold(household_id) {
   const result = await database.query(
     `
         SELECT 
-            *
+        tasks.id,
+        tasks.title,
+        tasks.description,
+        tasks.assigned_to,
+        tasks.status,
+        tasks.points,
+        tasks.household_id
         FROM
             tasks
         JOIN households ON tasks.household_id = households.id
@@ -20,7 +42,7 @@ async function getTasksByHousehold(household_id) {
     `,
     [household_id]
   );
-
+    console.log(`fetching `)
   console.log(result.rows);
   return result.rows;
 }
@@ -47,52 +69,36 @@ async function createTask(
   description,
   assigned_to,
   points,
-  status,
   household_id
-) {
-  // try{
-  // const userResult = await database.query(`
-  //     SELECT
-  //         users.id
-  //     FROM
-  //         users
-  //     WHERE
-  //         users.id = $1
-  // `, [assigned_to]);
-  // const assigned_user = userResult.rows[0];
-  // if(!assigned_user) throw new Error('User does not exist');
-  // } catch (error) {
-  //     console.log(error);
-  // }
-  console.log(points + "points");
-  points = parseInt(points);
-  console.log(points + "points parsed");
-
+) { 
+  
+  const status = "open";
   const result = await database.query(
     `
-    INSERT INTO tasks (household_id, title, description, assigned_to, status, points)        VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO tasks (household_id, title, description, assigned_to, status, points)        
+    VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
        `,
     [household_id, title, description, assigned_to, status, points]
   );
   console.log(result.rows);
   return result.rows;
-}
+} 
 
-async function updateTask(id, status) {
+async function updateTask( id, {title, description, assigned_to, status, points}){
   const result = await database.query(
     `
-        UPDATE tasks
-        SET status = $2
-        WHERE id = $1
-        RETURNING *;
-    `,
-    [id, status]
+    UPDATE tasks
+    SET title = $1, description = $2, assigned_to = $3, status = $4, points = $5
+    WHERE id = $6
+    RETURNING *; 
+    `, 
+    [title, description, assigned_to, status, points, id]
   );
   console.log(result.rows[0]);
   return result.rows[0];
 }
-
+ 
 async function deleteTask(id) {
   const result = await database.query(
     `
@@ -111,7 +117,7 @@ async function getUsersByHousehold(household_id) {
     `
     SELECT 
         * 
-    FROM 
+    FROM  
         users
     WHERE 
         household_id = $1;
@@ -123,6 +129,7 @@ async function getUsersByHousehold(household_id) {
 }
 
 module.exports = {
+  getCurrentUser,
   getTasksByHousehold,
   getTasksByUser,
   createTask,
