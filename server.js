@@ -11,6 +11,40 @@ const APP_SECRET = "legg til i .env";
 app.use(cors());
 app.use(express.json());
 
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await database.getUserByEmail(email);
+
+    if (!user) {
+      res.status(401).send({ error: "User not found." });
+      return;
+    }
+    
+    if (password != user.password) {
+      res.status(401).send({ error: "Wrong email and password combination." });
+      return;
+    }
+
+    const token = jwt.sign({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      admin: user.admin
+    }, Buffer.from(process.env.APP_SECRET, "base64"))
+    
+
+    res.json({
+      token : token
+    });
+    
+  } catch (error) {
+    res.status(500).send({ error: error.message })
+  }
+})
+
 app.get("/tasks/households/:household_id", async (req, res) => {
   const { household_id } = req.params;
   const tasks = await database.getTasksByHousehold(household_id);
@@ -37,8 +71,8 @@ app.post("/tasks", async (req, res) => {
     points,
     assigned_to,
     household_id
-  ); 
-  
+  );
+
   res.json(task);
 });
 

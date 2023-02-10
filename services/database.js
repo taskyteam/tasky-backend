@@ -7,6 +7,19 @@ const database = new Pool({
 });
 // A database for an house chore app called Tasky
 
+
+async function getUserByEmail(email) {
+  const result = await database.query(`
+  SELECT *
+  FROM users
+  WHERE
+    email = $1
+  
+  `, [email]);
+
+  return result.rows[0];
+}
+
 async function getTasksByHousehold(household_id) {
   const result = await database.query(
     `
@@ -129,4 +142,5 @@ module.exports = {
   updateTask,
   deleteTask,
   getUsersByHousehold,
+  getUserByEmail
 };
