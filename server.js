@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const database = require("./services/database");
 
 const PORT = process.env.PORT || 3333;
-const APP_SECRET = "legg til i .env";
 
 app.use(cors());
 app.use(express.json());
@@ -32,9 +31,10 @@ app.post("/login", async (req, res) => {
       id: user.id,
       email: user.email,
       username: user.username,
-      admin: user.admin
+      admin: user.admin,
+      household_id: user.household_id
     }, Buffer.from(process.env.APP_SECRET, "base64"))
-    
+    console.log(token)
 
     res.json({
       token : token
@@ -68,6 +68,12 @@ app.get("/tasks/users/:household_id", async (req, res) => {
   res.json(tasks);
 });
 
+app.get("/households/:housekey", async (req, res) => {
+  const { housekey } = req.params;
+  const household = await database.getHouseholdById(housekey);
+  res.json(household);
+});
+
 app.post("/tasks", async (req, res) => {
   const { title, description, points, assigned_to, household_id } = req.body;
   const task = await database.createTask(
@@ -81,19 +87,6 @@ app.post("/tasks", async (req, res) => {
   res.json(task);
 });
 
-// async function updateTask( id, title, description, assigned_to, status, points){
-//   const result = await database.query(
-//     `
-//     UPDATE tasks
-//     SET title = $1, description = $2, assigned_to = $3, status = $4, points = $5
-//     WHERE id = $6
-//     RETURNING *;
-//     `,
-//     [title, description, assigned_to, status, points, id]
-//   );
-//   console.log(result.rows[0]);
-//   return result.rows[0];
-// }
 
 app.put("/tasks/:id", async (req, res) => {
   const { id } = req.params;
@@ -120,3 +113,29 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port: ${PORT}!`);
 });
 
+//createhousehold
+app.post("/households", async (req, res) => {
+  const { name, housekey } = req.body;
+  const household = await database.createHousehold(name, housekey);
+  res.json(household);
+});
+
+//createaccount
+app.post("/users", async (req, res) => {
+  const { username, email, password } = req.body;
+  const user = await database.createAccount(username, email, password);
+  res.json(user);
+}
+);
+
+//update user
+app.put("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, email, admin, household_id} = req.body;
+  const user = await database.updateUser(id, username, email, admin, household_id);
+  res.json(user);
+});
+
+
+
+ 

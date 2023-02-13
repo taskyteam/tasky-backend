@@ -17,7 +17,7 @@ async function getCurrentUser(user_id) {
             WHERE
                 users.id = $1
         `,
-    [user_id]
+    [user_id] 
   );
   console.log(result.rows[0]);
   return result.rows[0];
@@ -31,7 +31,7 @@ async function getUserByEmail(email) {
   WHERE
     email = $1
   
-  `, [email]);
+  `, [email]);  
 
   return result.rows[0];
 }
@@ -97,17 +97,32 @@ async function createTask(
   console.log(result.rows);
   return result.rows;
 } 
-
-async function updateTask( id, {title, description, assigned_to, status, points}){
+ 
+async function updateTask( id, title, description, assigned_to, status, points){
   const result = await database.query(
-    `
+    `  
     UPDATE tasks
     SET title = $1, description = $2, assigned_to = $3, status = $4, points = $5
-    WHERE id = $6
+    WHERE id = $6  
     RETURNING *; 
     `, 
     [title, description, assigned_to, status, points, id]
-  );
+  ); 
+  console.log(result.rows[0]);
+  return result.rows[0];
+}  
+
+async function updateUser(id, username, email, admin, household_id){
+  
+  const result = await database.query(
+    ` 
+    UPDATE users  
+    SET username = $1, email = $2, household_id = $3, admin = $4
+    WHERE id = $5  
+    RETURNING *;   
+    `, 
+    [username, email, household_id, admin, id]
+  ); 
   console.log(result.rows[0]);
   return result.rows[0];
 }
@@ -141,13 +156,63 @@ async function getUsersByHousehold(household_id) {
   return result.rows;
 }
 
+async function createHousehold(name, housekey) {
+  const result = await database.query(
+    `
+    INSERT INTO households (name, housekey)        
+    VALUES ($1, $2)
+        RETURNING *;
+       `,
+    [name, housekey]
+  );
+  console.log(result.rows);
+  return result.rows;
+}
+
+async function createAccount(username, email, password){
+  // const admin = false;
+  // const household_id = null;
+  const result = await database.query(
+    `  
+    INSERT INTO users (username, email, password)        
+    VALUES ($1, $2, $3)
+        RETURNING *;
+       `,
+    [username, email, password,]
+  );
+  console.log(result.rows);
+  return result.rows;
+}
+
+async function getHouseholdById(housekey){
+  const result = await database.query(
+    `
+    SELECT
+        *
+    FROM
+        households
+    WHERE
+        households.housekey = $1
+    `,
+    [housekey]
+  );
+  console.log(result.rows[0]);
+  return result.rows[0];
+}
+
+
 module.exports = {
   getCurrentUser,
   getTasksByHousehold,
   getTasksByUser,
   createTask,
+  createAccount,
   updateTask,
+  updateUser,
   deleteTask,
   getUsersByHousehold,
-  getUserByEmail
+  getUserByEmail,
+  createHousehold,
+  getHouseholdById
 };
+ 
