@@ -32,7 +32,8 @@ app.post("/login", async (req, res) => {
       id: user.id,
       email: user.email,
       username: user.username,
-      admin: user.admin
+      admin: user.admin,
+      household_id: user.household_id
     }, Buffer.from(process.env.APP_SECRET, "base64"))
     
 
