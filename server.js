@@ -68,20 +68,21 @@ app.get("/tasks/users/:household_id", async (req, res) => {
   res.json(tasks);
 });
 
-app.get("/households/:housekey", async (req, res) => {
+app.get("/households/serial/:housekey", async (req, res) => {
   const { housekey } = req.params;
   const household = await database.getHouseholdById(housekey);
   res.json(household);
 });
 
 app.post("/tasks", async (req, res) => {
-  const { title, description, points, assigned_to, household_id } = req.body;
+  const { title, description, points, assigned_to, household_id, username } = req.body;
   const task = await database.createTask(
     title,
     description,
     points,
     assigned_to,
-    household_id
+    household_id,
+    username
   );
 
   res.json(task);
@@ -135,6 +136,21 @@ app.put("/users/:id", async (req, res) => {
   const user = await database.updateUser(id, username, email, admin, household_id);
   res.json(user);
 });
+
+//get current household by household_id
+app.get("/households/:household_id", async (req, res) => {
+  const { household_id } = req.params;
+  const household = await database.getCurrentHousehold(household_id);
+  res.json(household);
+});
+
+//get all users by household_id
+app.get("/users/households/:household_id", async (req, res) => {
+  const { household_id } = req.params;
+  const users = await database.getAllUsersInHousehold(household_id);
+  res.json(users);
+}
+);
 
 
 

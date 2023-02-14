@@ -46,7 +46,8 @@ async function getTasksByHousehold(household_id) {
         tasks.assigned_to,
         tasks.status,
         tasks.points,
-        tasks.household_id
+        tasks.household_id,
+        tasks.username
         FROM
             tasks
         JOIN households ON tasks.household_id = households.id
@@ -82,17 +83,18 @@ async function createTask(
   description,
   assigned_to,
   points,
-  household_id
+  household_id,
+  username
 ) { 
   
   const status = "open";
   const result = await database.query(
     `
-    INSERT INTO tasks (household_id, title, description, assigned_to, status, points)        
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO tasks (household_id, title, description, assigned_to, status, points, username)        
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *;
        `,
-    [household_id, title, description, assigned_to, status, points]
+    [household_id, title, description, assigned_to, status, points, username]
   );
   console.log(result.rows);
   return result.rows;
@@ -200,9 +202,44 @@ async function getHouseholdById(housekey){
   return result.rows[0];
 }
 
+async function getCurrentHousehold(household_id) {
+  const result = await database.query(
+    `
+            SELECT
+                *
+            FROM
+                households
+            WHERE
+                households.id = $1
+        `,
+    [household_id]
+  );
+  console.log(result.rows[0]);
+  return result.rows[0];
+}
+
+async function getAllUsersInHousehold(household_id) {
+  const result = await database.query(
+    `
+            SELECT
+                *
+            FROM
+                users
+            WHERE
+                users.household_id = $1
+        `,
+    [household_id]
+  );
+  console.log(result.rows);
+  return result.rows;
+}
+
+
+
 
 module.exports = {
   getCurrentUser,
+  getCurrentHousehold,
   getTasksByHousehold,
   getTasksByUser,
   createTask,
@@ -213,6 +250,7 @@ module.exports = {
   getUsersByHousehold,
   getUserByEmail,
   createHousehold,
-  getHouseholdById
+  getHouseholdById,
+  getAllUsersInHousehold
 };
  
