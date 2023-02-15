@@ -234,6 +234,39 @@ async function getAllUsersInHousehold(household_id) {
   return result.rows;
 }
 
+async function createGoal(title, points, household_id, assigned_to) {
+  const result = await database.query(
+    `
+    INSERT INTO goals (household_id, title, points, assigned_to)
+    VALUES ($1, $2, $3, $4)
+        RETURNING *;
+    `,
+    [household_id, title, points, assigned_to]
+  );
+  console.log(result.rows);
+  return result.rows;
+}
+
+async function getUserGoals(user_id) {
+  const result = await database.query(
+    `
+    SELECT
+        *
+    FROM
+        goals
+    WHERE
+        goals.assigned_to = $1
+    ORDER BY goals.id DESC;
+    `,
+    [user_id]
+  );
+  console.log(result.rows);
+  return result.rows;
+}
+
+
+    
+
 
 
 
@@ -251,6 +284,8 @@ module.exports = {
   getUserByEmail,
   createHousehold,
   getHouseholdById,
-  getAllUsersInHousehold
+  getAllUsersInHousehold,
+  createGoal,
+  getUserGoals
 };
  

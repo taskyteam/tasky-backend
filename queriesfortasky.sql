@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS households CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS tasks CASCADE;
+DROP TABLE IF EXISTS goals CASCADE;
 
 CREATE TABLE households (
     id SERIAL PRIMARY KEY,
@@ -14,7 +15,7 @@ CREATE TABLE users (
     password VARCHAR(50) NOT NULL,
     admin BOOLEAN default NULL,
     email VARCHAR(50) NOT NULL,
-    household_id INTEGER REFERENCES households(id) DEFAULT NULL
+    household_id INTEGER REFERENCES households(id) DEFAULT NULL    
 );
 
 CREATE TABLE tasks (
@@ -27,6 +28,17 @@ CREATE TABLE tasks (
     household_id INTEGER REFERENCES households(id),
     username VARCHAR(50) NOT NULL
 ); 
+
+CREATE TABLE goals (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    assigned_to UNIQUE INTEGER REFERENCES users(id),
+    status VARCHAR(255) default 'open',
+    points INTEGER,
+    household_id INTEGER REFERENCES households(id),
+); 
+
+
 
 
 INSERT INTO households (name) VALUES ('Kråkereiret');

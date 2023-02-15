@@ -153,5 +153,18 @@ app.get("/users/households/:household_id", async (req, res) => {
 );
 
 
+//create goal
+app.post("/goals", async (req, res) => {
+  const { title, points, household_id, assigned_to } = req.body;
+  const goal = await database.createGoal(title, points, household_id, assigned_to);
+  res.json(goal);
+});
+
+//getUserGoals
+app.get("/goals/:user_id", async (req, res) => {
+  const { user_id } = req.params;
+  const goals = await database.getUserGoals(user_id);
+  res.json(goals);
+});
 
  
