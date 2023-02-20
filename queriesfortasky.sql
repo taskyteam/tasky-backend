@@ -32,10 +32,10 @@ CREATE TABLE tasks (
 CREATE TABLE goals (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    assigned_to UNIQUE INTEGER REFERENCES users(id),
+    assigned_to INTEGER REFERENCES users(id),
     status VARCHAR(255) default 'open',
     points INTEGER,
-    household_id INTEGER REFERENCES households(id),
+    household_id INTEGER REFERENCES households(id)
 ); 
 
 
